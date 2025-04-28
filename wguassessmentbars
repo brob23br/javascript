@@ -1,0 +1,36 @@
+// Find all full progress bars on the page
+const allProgressBars = document.querySelectorAll('div.progress');
+
+// Loop through each progress bar
+allProgressBars.forEach((fullBar, index) => {
+    // Inside each full bar, try to find the first 'value' div (any type: competent, exemplary, etc.)
+    const filledBar = fullBar.querySelector('div.value');
+    
+    // If we find a filled bar inside
+    if (filledBar) {
+        const fullWidth = fullBar.offsetWidth;
+        const filledWidth = filledBar.offsetWidth;
+        const scorePercent = (filledWidth / fullWidth) * 100;
+        
+        // Create a new label element
+        const percentageLabel = document.createElement('div');
+        percentageLabel.style.position = 'absolute';
+        percentageLabel.style.top = '5px';
+        percentageLabel.style.left = '10px';
+        percentageLabel.style.fontWeight = 'bold';
+        percentageLabel.style.color = 'red';
+        percentageLabel.style.fontSize = '14px';
+        percentageLabel.textContent = `${scorePercent.toFixed(2)}%`;
+
+        // Make sure parent bar is relatively positioned
+        fullBar.style.position = 'relative';
+        
+        // Append the label
+        fullBar.appendChild(percentageLabel);
+
+        // Also log the percentage
+        console.log(`Section ${index + 1}: ${scorePercent.toFixed(2)}%`);
+    } else {
+        console.log(`Section ${index + 1}: No filled progress bar found.`);
+    }
+});
