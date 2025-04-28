@@ -1,36 +1,42 @@
-// Find all full progress bars on the page
-const allProgressBars = document.querySelectorAll('div.progress');
+// ==UserScript==
+// @name         WGU Score Percentage Overlay
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Show score percentages automatically on WGU coaching report
+// @author       You
+// @match        https://my.wgu.edu/coaching-report/*
+// @grant        none
+// ==/UserScript==
 
-// Loop through each progress bar
-allProgressBars.forEach((fullBar, index) => {
-    // Inside each full bar, try to find the first 'value' div (any type: competent, exemplary, etc.)
-    const filledBar = fullBar.querySelector('div.value');
-    
-    // If we find a filled bar inside
-    if (filledBar) {
-        const fullWidth = fullBar.offsetWidth;
-        const filledWidth = filledBar.offsetWidth;
-        const scorePercent = (filledWidth / fullWidth) * 100;
-        
-        // Create a new label element
-        const percentageLabel = document.createElement('div');
-        percentageLabel.style.position = 'absolute';
-        percentageLabel.style.top = '5px';
-        percentageLabel.style.left = '10px';
-        percentageLabel.style.fontWeight = 'bold';
-        percentageLabel.style.color = 'red';
-        percentageLabel.style.fontSize = '14px';
-        percentageLabel.textContent = `${scorePercent.toFixed(2)}%`;
+(function() {
+    'use strict';
 
-        // Make sure parent bar is relatively positioned
-        fullBar.style.position = 'relative';
-        
-        // Append the label
-        fullBar.appendChild(percentageLabel);
+    // Delay a little because WGU might load data dynamically
+    setTimeout(() => {
+        const allProgressBars = document.querySelectorAll('div.progress');
 
-        // Also log the percentage
-        console.log(`Section ${index + 1}: ${scorePercent.toFixed(2)}%`);
-    } else {
-        console.log(`Section ${index + 1}: No filled progress bar found.`);
-    }
-});
+        allProgressBars.forEach((fullBar, index) => {
+            const filledBar = fullBar.querySelector('div.value');
+
+            if (filledBar) {
+                const fullWidth = fullBar.offsetWidth;
+                const filledWidth = filledBar.offsetWidth;
+                const scorePercent = (filledWidth / fullWidth) * 100;
+
+                const percentageLabel = document.createElement('div');
+                percentageLabel.style.position = 'absolute';
+                percentageLabel.style.top = '5px';
+                percentageLabel.style.left = '10px';
+                percentageLabel.style.fontWeight = 'bold';
+                percentageLabel.style.color = scorePercent >= 80 ? 'green' : 'red';
+                percentageLabel.style.fontSize = '14px';
+                percentageLabel.textContent = `${scorePercent.toFixed(2)}%`;
+
+                fullBar.style.position = 'relative';
+                fullBar.appendChild(percentageLabel);
+
+                console.log(`Section ${index + 1}: ${scorePercent.toFixed(2)}%`);
+            }
+        });
+    }, 1500); // 1.5 second delay to allow page to fully render
+})();
